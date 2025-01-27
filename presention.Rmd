@@ -1,0 +1,70 @@
+---
+title: "Untitled"
+author: "Data Products Reproducible Pitch Presentation"
+date: "2025-01-27"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Shiny App - Calculating Power for Gaussian Data
+This Shiny Application calculates statistical power based on a normal distribution function using pnorm and shows this graphically in the form of a plot of two normal densities.
+
+Power is the probability of rejecting a null hypothesis when it is false.
+
+We consider a theoretical example where our sample mean is normally distributed and the standard deviation of the population is known.
+
+The null hypothesis H0: mu = mu0 versus the alternative hypothesis Ha: mu > mu0 (one sided test)
+
+The application allows varying the parameters for calculating power:
+
+mu0: sample mean under null;
+mua: sample mean under alternative;
+sigma: standard deviation;
+n: sample size;
+alpha: type I error rate.
+## Code
+```{r}
+install.packages("ggplot2")
+library(ggplot2)
+mu0 <- 30
+mua <- 32
+sigma <- 4
+n <- 16
+alpha <- 0.05
+
+```
+## Application output example
+```{r}
+myplot <- function(sigma, mua, n, alpha){
+        g = ggplot(data.frame(mu = c(mu0-3, mu0+6)), aes(x = mu))
+        g = g + stat_function(fun=dnorm, geom = "line", 
+                              args = list(mean = mu0, sd = sigma / sqrt(n)), 
+                              size = 2, col = "red")
+        g = g + stat_function(fun=dnorm, geom = "line", 
+                              args = list(mean = mua, sd = sigma / sqrt(n)), 
+                              size = 2, col = "blue")
+        xitc = mu0 + qnorm(1 - alpha) * sigma / sqrt(n)
+        g = g + geom_vline(xintercept=xitc, size = 3)
+        g
+    }
+power <- pnorm(mu0 + qnorm(1-alpha)* sigma/sqrt(n), mean= mua, sd = sigma/sqrt(n), lower.tail = FALSE)         
+myplot(sigma, mua, n, alpha)
+
+```
+
+## Results
+We consider an example where mu0 =30; mua =32; sigma = 4, n= 16 and alpha = 0.05. The power is equal to: 0.63876, therefore we have a 64% probability of detecting a mean of 32 or larger. This is the area under the blue curve to the right of the vertical line. The line is set so that the area under the red curve to the right of it is always equal to alpha.
+
+## Links
+This presentation is part of the project for the Developing Data Products at Coursera.
+
+The Shiny application described here is available at: https://newpoint.shinyapps.io/shinny_app3/
+
+The server.R and ui.R source code can be found on github at: https://github.com/17184645/shinnyApplication
+
+Thank you!
+
+
